@@ -88,13 +88,27 @@
 
       // Enable the capture button once the video stream is ready
       snap.addEventListener('click', () => {
-        const context = canvas.getContext('2d');
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        canvas.style.display = 'block';
-        save.disabled = false;
-        canvas.style.transform = isMirrored ? 'scaleX(-1)' : 'scaleX(1)';
-      });
+      const context = canvas.getContext('2d');
 
+      // MUST set size BEFORE drawing
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.save();
+
+      if (isMirrored) {
+        context.translate(canvas.width, 0);
+        context.scale(-1, 1);
+      }
+
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      context.restore();
+
+      canvas.style.display = 'block';
+      save.disabled = false;
+    });
       // Mirror functionality
       mirror.addEventListener('click', () => {
         isMirrored = !isMirrored;
